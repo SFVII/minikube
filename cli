@@ -1,0 +1,41 @@
+#!/bin/bash
+. ./minikube/utility.sh
+if [ -z "$REGISTRY_URL" ]; then
+  echo "Registry is not set please use ./minikube/cli registry"
+else
+  echo "Current registry $REGISTRY_URL"
+fi
+if [ "$1" == "init" ]; then
+  minikubeStart
+  exit
+fi
+if [ $(minikubeIsRunning) == "running" ]; then
+  if [ "$1" == "deploy" ]; then
+    if [ -z "$REGISTRY_URL" ]; then
+      echo "Registry is not set please use ./minikube/cli registry"
+      exit
+    else
+      publishDockerImage
+      exit
+    fi
+  elif [ "$1" == "delete" ]; then
+    deleteDeployment
+    exit
+  elif [ "$1" == "log" ]; then
+    logDeployment
+    exit
+  elif [ "$1" == "describe" ]; then
+    describeDeployment
+    exit
+  elif [ "$1" == "registry" ]; then
+    setRegistryUrl
+    echo "Please restart your terminal to apply change"
+    exit
+  else
+    help
+    exit
+  fi
+else
+  echo "Please start minikube before ./minikube/cli init"
+  exit
+fi
