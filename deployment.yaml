@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $DOCKER_TAG
+  labels:
+    app: $DOCKER_TAG
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $DOCKER_TAG
+  template:
+    metadata:
+      labels:
+        app: $DOCKER_TAG
+    spec:
+      containers:
+        - name: $DOCKER_TAG
+          image: $REGISTRY_URL/$DOCKER_TAG:$VERSION
+          ports:
+            - containerPort: 3002
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MODE
+              value: "local"
