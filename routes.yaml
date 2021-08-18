@@ -1,0 +1,17 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: $DOCKER_TAG-web
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: Host("$DOCKER_TAG.k8s.local")
+      middlewares:
+        - name: traefik-http-to-https@kubernetescrd
+          namespace: traefik
+      services:
+        - name: $DOCKER_TAG
+          port: <change_port_app>
+

@@ -19,8 +19,17 @@ spec:
         - name: $DOCKER_TAG
           image: $REGISTRY_URL/$DOCKER_TAG:$VERSION
           ports:
-            - containerPort: 3002
+            - containerPort: <change_port_app>
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: rabbitmq-storage
+              mountPath: /var/lib/rabbitmq
           env:
             - name: MODE
               value: "local"
+      volumes:
+        - name: rabbitmq-storage
+          hostPath:
+            path: <change_path_local>
+
+

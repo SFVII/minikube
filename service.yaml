@@ -1,0 +1,12 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: $DOCKER_TAG
+spec:
+  ports:
+    - port: <change_port_app>
+      name: web
+      protocol: TCP
+  selector:
+    app: $DOCKER_TAG
