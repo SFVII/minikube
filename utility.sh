@@ -41,27 +41,28 @@ EOF
 function startProjectConfig() {
    mkdir ./kube-deploy
    echo "kube-deploy" >> .gitignore
-   echo "Does your project will use customization ? (y/N): "
+
    kustomization="resources:\n"
    parseFile ./minikube/deployment.yaml ./kube-deploy/deployment.yaml
    kustomization="${kustomization}\t- ./kube-deploy/deployment.yaml\n"
+   echo "Does your project will use customization ? (y/N): "
    read -r customization
-   if (( "$customization" == "y")); then
+   if [[ "$customization" == "y" ]]; then
      echo "Does your project will use custom resources definition ? (y/N): "
      read -r crd
-     if (( "$crd" == "y")); then
+     if [[ "$crd" == "y" ]]; then
         parseFile ./minikube/crd.yaml ./kube-deploy/minikube-crd.yaml
         kustomization="${kustomization}\t- ./kube-deploy/minikube-crd.yaml\n"
      fi
      echo "Does your project will use service ? (y/N): "
      read -r service
-     if (( "$service" == "y")); then
+     if [[ "$service" == "y" ]]; then
         parseFile ./minikube/service.yaml ./kube-deploy/minikube-service.yaml
         kustomization="${kustomization}\t- ./kube-deploy/minikube-service.yaml\n"
      fi
      echo "Does your project will use routes ? (y/N): "
      read -r routes
-     if (( "$routes" == "y")); then
+     if [[ "$routes" == "y" ]]; then
         parseFile ./minikube/routes.yaml ./kube-deploy/minikube-routes.yaml
          kustomization="${kustomization}\t- ./kube-deploy/minikube-routes.yaml\n"
      fi
