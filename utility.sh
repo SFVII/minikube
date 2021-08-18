@@ -21,7 +21,9 @@ function replace() {
 GIT_BRANCH=$(parse_git_branch)
 PROJECT_NAME="${PWD##*/}"
 IMAGE_NAME=$(replace "${PROJECT_NAME}" "_" "-")
-
+DOCKER_TAG=${IMAGE_NAME}
+CI_ENVIRONMENT_NAME="local"
+VERSION=${GIT_BRANCH}
 function pingRegistry() {
   curl -Is https://"$1" | head -1
 }
@@ -120,9 +122,6 @@ function deployKubectl() {
 }
 
 function publishDockerImage() {
-  DOCKER_TAG=${IMAGE_NAME}
-  CI_ENVIRONMENT_NAME="local"
-  VERSION=${GIT_BRANCH}
   echo "$DOCKER_TAG"
   echo "$CI_ENVIRONMENT_NAME"
   echo "$VERSION"
