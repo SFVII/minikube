@@ -67,7 +67,7 @@ function startProjectConfig() {
          kustomization="${kustomization}\t- ./kube-deploy/minikube-routes.yaml\n"
      fi
    fi
-   printf customization > ./kube-deploy/kustomization.yaml
+   printf kustomization > ./kube-deploy/kustomization.yaml
    echo "Configuration is localized in ./kube-deploy"
 }
 function projectConfig() {
