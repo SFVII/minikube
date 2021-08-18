@@ -46,22 +46,22 @@ function startProjectConfig() {
    parseFile ./minikube/deployment.yaml ./kube-deploy/deployment.yaml
    kustomization="${kustomization}\t- ./kube-deploy/deployment.yaml\n"
    echo "Does your project will use customization ? (y/N): "
-   read -r customization
+   read -r -s customization
    if [[ "$customization" == "y" ]]; then
      echo "Does your project will use custom resources definition ? (y/N): "
-     read -r crd
+     read -r -s crd
      if [[ "$crd" == "y" ]]; then
         parseFile ./minikube/crd.yaml ./kube-deploy/minikube-crd.yaml
         kustomization="${kustomization}\t- ./kube-deploy/minikube-crd.yaml\n"
      fi
      echo "Does your project will use service ? (y/N): "
-     read -r service
+     read -r -s service
      if [[ "$service" == "y" ]]; then
         parseFile ./minikube/service.yaml ./kube-deploy/minikube-service.yaml
         kustomization="${kustomization}\t- ./kube-deploy/minikube-service.yaml\n"
      fi
      echo "Does your project will use routes ? (y/N): "
-     read -r routes
+     read -r -s routes
      if [[ "$routes" == "y" ]]; then
         parseFile ./minikube/routes.yaml ./kube-deploy/minikube-routes.yaml
          kustomization="${kustomization}\t- ./kube-deploy/minikube-routes.yaml\n"
@@ -74,7 +74,7 @@ function projectConfig() {
   if [[ -d "./kube-deploy" ]]; then
     echo "config directory exist";
     echo "Would you want to reset config ? (y/N)"
-    read -r reset
+    read -r -s reset
 
     if [[ "$reset" == "y" ]]; then
        rm -rf ./kube-deploy
@@ -104,7 +104,7 @@ function minikubeStart() {
 
 function setRegistryUrl() {
   echo "Please enter the your registry domain ex : (your.registry.com)"
-  read -r REGISTRY_URL
+  read -r -s REGISTRY_URL
   REGISTRY_EXIST=$(pingRegistry "$REGISTRY_URL")
   if [ -z "$REGISTRY_EXIST" ]; then
     echo "Registry $REGISTRY_URL doesn't exist"
