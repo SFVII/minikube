@@ -46,7 +46,7 @@ function startProjectConfig() {
 
    kustomization="resources:\n"
    parseFile ./minikube/deployment.yaml ./kube-deploy/deployment.yaml
-   kustomization="${kustomization}\t- ./kube-deploy/deployment.yaml\n"
+   kustomization="${kustomization}\t- kube-deploy/deployment.yaml\n"
    echo "Does your project will use customization ? (y/N): "
    read -r -s customization
    if [[ "$customization" == "y" ]]; then
@@ -54,19 +54,19 @@ function startProjectConfig() {
      read -r -s crd
      if [[ "$crd" == "y" ]]; then
         parseFile ./minikube/crd.yaml ./kube-deploy/minikube-crd.yaml
-        kustomization="${kustomization}\t- ./kube-deploy/minikube-crd.yaml\n"
+        kustomization="${kustomization}\t- kube-deploy/minikube-crd.yaml\n"
      fi
      echo "Does your project will use service ? (y/N): "
      read -r -s service
      if [[ "$service" == "y" ]]; then
         parseFile ./minikube/service.yaml ./kube-deploy/minikube-service.yaml
-        kustomization="${kustomization}\t- ./kube-deploy/minikube-service.yaml\n"
+        kustomization="${kustomization}\t- kube-deploy/minikube-service.yaml\n"
      fi
      echo "Does your project will use routes ? (y/N): "
      read -r -s routes
      if [[ "$routes" == "y" ]]; then
         parseFile ./minikube/routes.yaml ./kube-deploy/minikube-routes.yaml
-         kustomization="${kustomization}\t- ./kube-deploy/minikube-routes.yaml\n"
+         kustomization="${kustomization}\t- kube-deploy/minikube-routes.yaml\n"
      fi
    fi
    printf "%b" "$kustomization" > ./kustomization.yml
