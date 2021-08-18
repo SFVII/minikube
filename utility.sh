@@ -69,7 +69,7 @@ function startProjectConfig() {
          kustomization="${kustomization}\t- ./kube-deploy/minikube-routes.yaml\n"
      fi
    fi
-   printf "%b" "$kustomization" > ./kube-deploy/kustomization.yaml
+   printf "%b" "$kustomization" > ./kustomization.yaml
    echo "Configuration is localized in ./kube-deploy"
 }
 function projectConfig() {
@@ -117,7 +117,8 @@ function setRegistryUrl() {
 }
 
 function deployKubectl() {
-  kubectl apply -f ./kube-deploy/kustomization.yaml
+  kubectl kustomize kustomization.yaml > deploy.yaml
+  kubectl apply -f deploy.yaml
   eval $(docker-machine env -u)
 }
 
