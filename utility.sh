@@ -73,9 +73,10 @@ function startProjectConfig() {
 function projectConfig() {
   if [[ -d "./kube-deploy" ]]; then
     echo "config directory exist";
-    read -r reset
     echo "Would you want to reset config ? (y/N)"
-    if (( "$reset" == "y" )); then
+    read -r reset
+
+    if [[ "$reset" == "y" ]]; then
        rm -rf ./kube-deploy
        startProjectConfig
     fi
