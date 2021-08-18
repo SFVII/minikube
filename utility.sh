@@ -31,6 +31,57 @@ function minikubeIsRunning() {
   echo running
 }
 
+function parseFile() {
+  eval "cat <<EOF
+$(<"$1")
+EOF
+" >"$2"
+}
+
+function startProjectConfig() {
+   mkdir ./kube-deploy
+   echo "kube-deploy" >> .gitignore
+   echo "Does your project will use customization ? (y/N): "
+   kustomization="resources:\n"
+   parseFile ./minikube/deployment.yaml ./kube-deploy/deployment.yaml
+   kustomization="${kustomization}\t- ./kube-deploy/deployment.yaml\n"
+   read -r customization
+   if (( "$customization" == "y")); then
+     echo "Does your project will use custom resources definition ? (y/N): "
+     read -r crd
+     if (( "$crd" == "y")); then
+        parseFile ./minikube/crd.yaml ./kube-deploy/minikube-crd.yaml
+        kustomization="${kustomization}\t- ./kube-deploy/minikube-crd.yaml\n"
+     fi
+     echo "Does your project will use service ? (y/N): "
+     read -r service
+     if (( "$service" == "y")); then
+        parseFile ./minikube/service.yaml ./kube-deploy/minikube-service.yaml
+        kustomization="${kustomization}\t- ./kube-deploy/minikube-service.yaml\n"
+     fi
+     echo "Does your project will use routes ? (y/N): "
+     read -r routes
+     if (( "$routes" == "y")); then
+        parseFile ./minikube/routes.yaml ./kube-deploy/minikube-routes.yaml
+         kustomization="${kustomization}\t- ./kube-deploy/minikube-routes.yaml\n"
+     fi
+   fi
+   printf customization > ./kube-deploy/kustomization.yaml
+   echo "Configuration is localized in ./kube-deploy"
+}
+function projectConfig() {
+  if [[ -d "./kube-deploy" ]]; then
+    echo "config directory exist";
+    read -r reset
+    echo "Would you want to reset config ? (y/N)"
+    if (( "$reset" == "y" )); then
+       rm -rf ./kube-deploy
+       startProjectConfig
+    fi
+  else
+    startProjectConfig
+  fi
+}
 function minikubeStart() {
   status=$(minikubeIsRunning)
   if ((status != "running")); then
@@ -41,9 +92,11 @@ function minikubeStart() {
     else
       eval $(minikube docker-env)
       echo "Minikube is successfully started"
+      projectConfig
     fi
   else
     echo "Minikube is already running"
+    projectConfig
   fi
 }
 
@@ -59,15 +112,8 @@ function setRegistryUrl() {
 
 }
 
-function prepareDeployment() {
-  eval "cat <<EOF
-$(<./minikube/deployment.yaml)
-EOF
-" >./minikube/current.yaml
-}
-
 function deployKubectl() {
-  kubectl apply -f ./minikube/current.yaml
+  kubectl apply -f ./kube-deploy/kustomization.yaml
   eval $(docker-machine env -u)
 }
 
@@ -81,7 +127,7 @@ function publishDockerImage() {
   sudo docker build -t "$DOCKER_TAG:$VERSION" .
   sudo docker tag "$DOCKER_TAG:$VERSION" "$REGISTRY_URL/$DOCKER_TAG:$VERSION"
   sudo docker push "$REGISTRY_URL/$DOCKER_TAG:$VERSION"
-  prepareDeployment
+  deployKubectl
 }
 
 function deleteDeployment() {
